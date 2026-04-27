@@ -4,7 +4,7 @@
 
 直接用浏览器打开：
 
-`D:\workspace\any\ai-monopoly-web\index.html`
+`D:\workspace\aimonopoly\ai-monopoly-web\index.html`
 
 这是一个纯静态网页，不需要安装依赖，也不需要启动服务器。
 
@@ -18,11 +18,42 @@
 - 班级榜单：按综合估值展示班级内小组排名。
 - 期末棋盘：支持 24 格棋盘、掷骰子、落点任务和教师指定落点。
 - 手动调整：可按教师判断自由增减各项资源。
-- 期末卡牌：支持抽机会卡、危机卡、条件结算、成功/失败结算，支持购买道具卡。
+- 期末卡牌：支持 16 张机会卡、16 张危机卡、12 张道具卡，支持条件结算、成功/失败结算、购买和使用道具卡。
 - 期末评分：按 100 分制录入并自动汇总。
 - 经营记录：所有策略、抽卡、调整都会写入本组记录。
-- 撤销功能：可撤销当前小组上一条经营记录。
-- 数据导入导出：可导出 JSON 备份，也可导入继续使用。
+- 撤销功能：可撤销当前小组上一条经营记录；组间互动会按同一个 transactionId 同步撤销双方变化。
+- 数据导入导出：可导出带 schemaVersion 的 JSON 备份，也可导入继续使用。
+
+## 项目结构
+
+```text
+ai-monopoly-web/
+  index.html
+  styles.css
+  app.js
+  src/
+    rules.js        # 策略、棋盘、卡牌、评分项等规则数据
+    game-logic.js   # 输入转义、指标归一化、道具效果、事务撤销
+    events.js       # 经营记录/事件创建
+    storage.js      # localStorage、schemaVersion、导入导出
+  tests/
+    *.test.js       # Node.js 内置 test runner 测试
+```
+
+后续如果升级到 Node.js / SQLite，优先替换 `src/storage.js`，让 `saveState/loadState/exportState` 改为调用 API；规则和事件模型可以继续复用。
+
+## 本地验证
+
+不需要安装依赖，使用 Node.js 内置测试工具即可：
+
+```bash
+node --check ai-monopoly-web/src/rules.js
+node --check ai-monopoly-web/src/game-logic.js
+node --check ai-monopoly-web/src/events.js
+node --check ai-monopoly-web/src/storage.js
+node --check ai-monopoly-web/app.js
+node --test ai-monopoly-web/tests/*.test.js
+```
 
 ## 使用建议
 
