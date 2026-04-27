@@ -35,6 +35,7 @@ ai-monopoly-web/
     rules.js        # 策略、棋盘、卡牌、评分项等规则数据
     game-logic.js   # 输入转义、指标归一化、道具效果、事务撤销
     events.js       # 经营记录/事件创建
+    state.js        # 团队资源变更与指标边界处理
     storage.js      # localStorage、schemaVersion、导入导出
   tests/
     *.test.js       # Node.js 内置 test runner 测试
@@ -50,6 +51,7 @@ ai-monopoly-web/
 node --check ai-monopoly-web/src/rules.js
 node --check ai-monopoly-web/src/game-logic.js
 node --check ai-monopoly-web/src/events.js
+node --check ai-monopoly-web/src/state.js
 node --check ai-monopoly-web/src/storage.js
 node --check ai-monopoly-web/app.js
 node --test ai-monopoly-web/tests/*.test.js

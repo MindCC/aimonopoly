@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const logic = require("../src/game-logic.js");
+const rules = require("../src/rules.js");
 
 const metrics = {
   cash: 10000,
@@ -97,4 +98,30 @@ test("applyPropEffect consumes a shield prop and blocks matching metric loss", (
   assert.deepEqual(result.delta, { reputation: 0, cash: -500 });
   assert.equal(current.props[0].used, true);
   assert.match(result.note, /抵消/);
+});
+
+test("context-bound props only apply in matching classroom contexts", () => {
+  const capitalProp = rules.propCards.find((card) => card.id === "P06");
+  const productProp = rules.propCards.find((card) => card.id === "P07");
+
+  assert.equal(logic.isPropApplicable(capitalProp, { type: "capital" }, { cash: 5000 }), true);
+  assert.equal(logic.isPropApplicable(capitalProp, { type: "product" }, { cash: 5000 }), false);
+  assert.equal(logic.isPropApplicable(productProp, { type: "product" }, { product: 1 }), true);
+  assert.equal(logic.isPropApplicable(productProp, { type: "capital" }, { product: 1 }), false);
+});
+
+test("applyPropEffect consumes a context-bound bonus prop in matching context", () => {
+  const current = team("alpha");
+  const prop = {
+    id: "P06",
+    name: "投资人引荐卡",
+    used: false,
+    effect: { kind: "bonusDelta", contexts: ["capital"], delta: { cash: 3000 } },
+  };
+
+  const result = logic.applyPropEffect(current, prop, { cash: 3000 }, undefined, { type: "capital" });
+
+  assert.deepEqual(result.delta, { cash: 6000 });
+  assert.equal(prop.used, true);
+  assert.match(result.note, /生效/);
 });

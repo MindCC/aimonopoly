@@ -519,22 +519,22 @@ const crisisCards = [
 ];
 
 const propCards = [
-  { id: "P01", name: "技术加班卡", desc: "演示失败后可补救一次", effect: { kind: "shield", metric: "reputation", amount: 1 } },
+  { id: "P01", name: "技术加班卡", desc: "演示失败后可补救一次", effect: { kind: "shield", metric: "reputation", amount: 1, contexts: ["demo", "crisis"] } },
   { id: "P02", name: "用户口碑卡", desc: "抵消一次声誉损失", effect: { kind: "shield", metric: "reputation", amount: 1 } },
   { id: "P03", name: "合规护盾卡", desc: "抵消一次合规处罚", effect: { kind: "shield", metric: "compliance", amount: 1 } },
-  { id: "P04", name: "专家顾问卡", desc: "可更换一道评委问题", effect: { kind: "note" } },
+  { id: "P04", name: "专家顾问卡", desc: "可更换一道评委问题", effect: { kind: "note", contexts: ["manual"] } },
   { id: "P05", name: "追加预算卡", desc: "本轮行动成本减半", effect: { kind: "halvePenalty", metric: "cash" } },
-  { id: "P06", name: "投资人引荐卡", desc: "资本格融资额 +3000", effect: { kind: "bonusDelta", delta: { cash: 3000 } } },
-  { id: "P07", name: "产品聚焦卡", desc: "产品格回答成功后额外产品力 +1", effect: { kind: "bonusDelta", delta: { product: 1 } } },
-  { id: "P08", name: "应急公关卡", desc: "危机卡失败后惩罚减半", effect: { kind: "halvePenalty" } },
-  { id: "P09", name: "用户访谈卡", desc: "市场格回答成功后额外用户 +30", effect: { kind: "bonusDelta", delta: { users: 30 } } },
-  { id: "P10", name: "架构图卡", desc: "技术格回答时可获得 30 秒准备时间", effect: { kind: "note" } },
-  { id: "P11", name: "复盘加分卡", desc: "复盘格回答成功后声誉 +1", effect: { kind: "bonusDelta", delta: { reputation: 1 } } },
+  { id: "P06", name: "投资人引荐卡", desc: "资本格融资额 +3000", effect: { kind: "bonusDelta", contexts: ["capital"], delta: { cash: 3000 } } },
+  { id: "P07", name: "产品聚焦卡", desc: "产品格回答成功后额外产品力 +1", effect: { kind: "bonusDelta", contexts: ["product"], delta: { product: 1 } } },
+  { id: "P08", name: "应急公关卡", desc: "危机卡失败后惩罚减半", effect: { kind: "halvePenalty", contexts: ["crisis"] } },
+  { id: "P09", name: "用户访谈卡", desc: "市场格回答成功后额外用户 +30", effect: { kind: "bonusDelta", contexts: ["market"], delta: { users: 30 } } },
+  { id: "P10", name: "架构图卡", desc: "技术格回答时可获得 30 秒准备时间", effect: { kind: "note", contexts: ["tech"] } },
+  { id: "P11", name: "复盘加分卡", desc: "复盘格回答成功后声誉 +1", effect: { kind: "bonusDelta", contexts: ["review"], delta: { reputation: 1 } } },
   {
     id: "P12",
     name: "一键迭代卡",
     desc: "可将产品力 +1 或技术力 +1，二选一",
-    effect: { kind: "chooseDelta", options: [{ label: "产品力 +1", delta: { product: 1 } }, { label: "技术力 +1", delta: { tech: 1 } }] },
+    effect: { kind: "chooseDelta", contexts: ["manual"], options: [{ label: "产品力 +1", delta: { product: 1 } }, { label: "技术力 +1", delta: { tech: 1 } }] },
   },
 ];
 

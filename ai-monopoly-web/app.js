@@ -21,6 +21,7 @@ let compactMode = localStorage.getItem("ai-monopoly-compact-mode") === "true";
 const el = (id) => document.getElementById(id);
 const logic = window.AiMonopolyLogic;
 const events = window.AiMonopolyEvents;
+const stateTools = window.AiMonopolyState;
 const storage = window.AiMonopolyStorage;
 const h = (value) => logic.escapeHtml(value);
 const money = (value) => `${value >= 0 ? "" : "-"}${Math.abs(value).toLocaleString()} 元`;
@@ -123,21 +124,14 @@ function normalizeDelta(delta = {}) {
   return { cash: 0, users: 0, product: 0, tech: 0, reputation: 0, compliance: 0, ...delta };
 }
 
-function applyMatchingPropIfConfirmed(team, delta) {
-  const props = team.props || [];
-  const candidates = props.filter((prop) => {
-    if (prop.used) return false;
-    const effect = prop.effect || {};
-    if (effect.kind === "shield") return Number(delta[effect.metric]) < 0;
-    if (effect.kind === "halvePenalty") {
-      return effect.metric ? Number(delta[effect.metric]) < 0 : Object.values(delta).some((value) => Number(value) < 0);
-    }
-    return false;
-  });
+function applyMatchingPropIfConfirmed(team, delta, context = { type: "general" }) {
+  const candidates = logic
+    .applicableProps(team, context, delta)
+    .filter((prop) => prop.effect?.kind !== "chooseDelta");
   const prop = candidates[0];
   if (!prop) return null;
-  if (!confirm(`检测到可用道具卡「${prop.name}」。是否使用它来抵消或减轻本次损失？`)) return null;
-  const result = logic.applyPropEffect(team, prop, delta);
+  if (!confirm(`检测到可用道具卡「${prop.name}」。是否在本次结算中使用？`)) return null;
+  const result = logic.applyPropEffect(team, prop, delta, undefined, context);
   return result.note ? { ...result, prop } : null;
 }
 
@@ -147,16 +141,13 @@ function applyDelta(delta, event, topic = el("roundTopic")?.value || "课堂经�
   let fullDelta = normalizeDelta(delta);
   let eventText = event;
   const transactionId = meta.transactionId || uid("tx");
-  const propResult = applyMatchingPropIfConfirmed(team, fullDelta);
+  const propResult = applyMatchingPropIfConfirmed(team, fullDelta, { type: meta.propContext || meta.contextType || "general" });
   if (propResult) {
     fullDelta = normalizeDelta(propResult.delta);
     eventText = `${eventText}；${propResult.note}`;
     meta = { ...meta, propUsed: propResult.prop.instanceId || propResult.prop.id };
   }
-  Object.entries(fullDelta).forEach(([key, value]) => {
-    team.metrics[key] += Number(value) || 0;
-  });
-  clampMetrics(team);
+  stateTools.applyDeltaToTeam(team, fullDelta);
   team.records.unshift(
     events.createRecord({
       id: uid("record"),
@@ -479,7 +470,9 @@ function settleBoardTask(cell, result) {
     return;
   }
   const labels = { success: "优秀完成", partial: "基本完成", fail: "处理失败" };
-  applyDelta(table[cell.type]?.[result] || {}, `${cell.title}${labels[result]}：${cell.task}`, "期末大富翁棋盘");
+  applyDelta(table[cell.type]?.[result] || {}, `${cell.title}${labels[result]}：${cell.task}`, "期末大富翁棋盘", {
+    propContext: cell.type,
+  });
 }
 
 function boardAdvice(type) {
@@ -678,7 +671,9 @@ function settleCard(targetId, result) {
   if (!card || !team) return;
   const delta = result === "auto" ? card.settle(team) : card[result] || {};
   const resultLabel = result === "auto" ? "按条件结算" : result === "success" ? "成功结算" : "失败结算";
-  applyDelta(delta, `${card.name}${resultLabel}`, "期末大富翁决战");
+  applyDelta(delta, `${card.name}${resultLabel}`, "期末大富翁决战", {
+    propContext: targetId === "crisisCard" ? "crisis" : "opportunity",
+  });
   el(targetId).querySelector(".settle-actions")?.remove();
 }
 
@@ -688,12 +683,7 @@ function targetTeam() {
 }
 
 function applyDeltaToTeam(team, delta) {
-  if (!team) return;
-  const fullDelta = normalizeDelta(delta);
-  Object.entries(fullDelta).forEach(([key, value]) => {
-    team.metrics[key] += Number(value) || 0;
-  });
-  clampMetrics(team);
+  stateTools.applyDeltaToTeam(team, delta);
 }
 
 function addRecordToTeam(team, delta, event, topic = "组间互动卡", transactionId = uid("tx")) {
@@ -799,16 +789,26 @@ function useProp(index) {
     const answer = prompt(`请选择道具效果：\n${labels}`, "1");
     choice = Math.max(0, Math.min((effect.options || []).length - 1, Number(answer || 1) - 1));
   } else if (effect.kind === "note" || effect.kind === "shield" || effect.kind === "halvePenalty") {
+    if (!logic.isPropApplicable(prop, { type: "manual" }, delta)) {
+      alert("这张道具卡需要在对应课堂场景结算时使用。");
+      return;
+    }
     prop.used = true;
     prop.usedAt = new Date().toISOString();
     applyDelta({}, `使用道具卡：${prop.name}（${prop.desc}）`, "期末大富翁决战", {
       propUsed: prop.instanceId || prop.id,
+      propContext: "manual",
     });
     return;
   }
-  const result = logic.applyPropEffect(team, prop, delta, choice);
+  if (!logic.isPropApplicable(prop, { type: "manual" }, delta)) {
+    alert("这张道具卡需要在对应课堂场景结算时使用。");
+    return;
+  }
+  const result = logic.applyPropEffect(team, prop, delta, choice, { type: "manual" });
   applyDelta(result.delta, `使用道具卡：${prop.name}`, "期末大富翁决战", {
     propUsed: prop.instanceId || prop.id,
+    propContext: "manual",
   });
 }
 

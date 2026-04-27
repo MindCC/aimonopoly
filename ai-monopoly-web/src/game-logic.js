@@ -31,6 +31,16 @@
     return compacted;
   }
 
+  function addDeltas(...deltas) {
+    const total = normalizeDelta();
+    deltas.forEach((delta) => {
+      Object.entries(normalizeDelta(delta)).forEach(([key, value]) => {
+        total[key] += Number(value) || 0;
+      });
+    });
+    return compactDelta(total);
+  }
+
   function clampTeamMetrics(team) {
     if (!team?.metrics) return;
     ["users", "product", "tech", "reputation", "compliance"].forEach((key) => {
@@ -107,7 +117,35 @@
     return { ok: true };
   }
 
-  function applyPropEffect(team, prop, delta = {}, choice) {
+  function contextMatches(effect, context = {}) {
+    if (!Array.isArray(effect.contexts) || effect.contexts.length === 0) return true;
+    return effect.contexts.includes(context.type);
+  }
+
+  function hasPenalty(delta = {}, metric) {
+    if (metric) return Number(delta[metric]) < 0;
+    return Object.values(delta).some((value) => Number(value) < 0);
+  }
+
+  function isPropApplicable(prop, context = {}, delta = {}) {
+    if (!prop || prop.used) return false;
+    const effect = prop.effect || {};
+    if (!contextMatches(effect, context)) return false;
+
+    if (effect.kind === "shield") return hasPenalty(delta, effect.metric);
+    if (effect.kind === "halvePenalty") return hasPenalty(delta, effect.metric);
+    if (effect.kind === "bonusDelta") return true;
+    if (effect.kind === "chooseDelta") return true;
+    if (effect.kind === "note") return true;
+    return false;
+  }
+
+  function applicableProps(team, context = {}, delta = {}) {
+    return (team?.props || []).filter((prop) => isPropApplicable(prop, context, delta));
+  }
+
+  function applyPropEffect(team, prop, delta = {}, choice, context = {}) {
+    if (!isPropApplicable(prop, context, delta)) return { delta, note: "" };
     if (!team || !prop || prop.used) return { delta, note: "" };
     const effect = prop.effect || {};
     let nextDelta = { ...delta };
@@ -123,12 +161,14 @@
       });
       note = `${prop.name}将惩罚减半`;
     } else if (effect.kind === "bonusDelta") {
-      nextDelta = compactDelta({ ...nextDelta, ...compactDelta(effect.delta) });
+      nextDelta = addDeltas(nextDelta, effect.delta);
       note = `${prop.name}生效`;
     } else if (effect.kind === "chooseDelta") {
       const selected = effect.options?.[choice] || effect.options?.[0] || {};
-      nextDelta = compactDelta({ ...nextDelta, ...compactDelta(selected.delta || selected) });
+      nextDelta = addDeltas(nextDelta, selected.delta || selected);
       note = `${prop.name}生效`;
+    } else if (effect.kind === "note") {
+      note = `${prop.name}已使用：${prop.desc}`;
     } else {
       return { delta, note: "" };
     }
@@ -142,9 +182,12 @@
     escapeHtml,
     normalizeDelta,
     compactDelta,
+    addDeltas,
     clampTeamMetrics,
     undoLastTransaction,
     validateImportState,
+    isPropApplicable,
+    applicableProps,
     applyPropEffect,
   };
 });
