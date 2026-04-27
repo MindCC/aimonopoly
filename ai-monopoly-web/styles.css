@@ -1,0 +1,901 @@
+:root {
+  --bg: #f4f2ec;
+  --ink: #1d1d1a;
+  --muted: #757168;
+  --line: #ded8cb;
+  --line-strong: #cfc5b4;
+  --surface: #fffaf0;
+  --surface-strong: #ffffff;
+  --accent: #116b58;
+  --accent-soft: #dcebe5;
+  --accent-dark: #0a4f41;
+  --danger: #b84738;
+  --danger-soft: #f4ddd9;
+  --gold: #b9812b;
+  --gold-soft: #f3e4c6;
+  --blue: #365b8c;
+  --blue-soft: #dfe8f4;
+  --shadow: 0 18px 45px rgba(42, 37, 28, 0.08);
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(135deg, rgba(17, 107, 88, 0.06), transparent 34%),
+    var(--bg);
+  font-family:
+    "Microsoft YaHei",
+    "PingFang SC",
+    "Segoe UI",
+    sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 304px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  border-right: 1px solid var(--line);
+  background: rgba(237, 232, 220, 0.92);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.brand h1,
+.brand p,
+.panel h2,
+.topbar h2,
+.section-title h3,
+.section-title p,
+.strategy-button h4,
+.manual-form h4 {
+  margin: 0;
+}
+
+.brand h1 {
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+.brand p,
+.eyebrow,
+.section-title p,
+.empty,
+.small-note,
+.task-card p {
+  color: var(--muted);
+}
+
+.panel {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.panel-heading,
+.section-title,
+.topbar,
+.tabs,
+.metric,
+.team-row,
+.class-row,
+.dialog-actions,
+.strategy-head,
+.pending-title,
+.dice-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #5c574d;
+}
+
+.icon-button,
+.ghost-button,
+.primary-button,
+.danger-button,
+.tab {
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0 13px;
+  background: transparent;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.icon-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.primary-button {
+  background: var(--accent);
+  color: white;
+}
+
+.primary-button:hover {
+  background: var(--accent-dark);
+}
+
+.ghost-button {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.danger-button {
+  color: var(--danger);
+  border-color: rgba(184, 71, 56, 0.28);
+  background: var(--danger-soft);
+}
+
+.class-list,
+.team-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.class-row,
+.team-row {
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--radius);
+  padding: 10px;
+}
+
+.class-row.active,
+.team-row.active {
+  background: #fffaf0;
+  border-color: #d8c8a6;
+  box-shadow: 0 10px 30px rgba(56, 47, 26, 0.07);
+}
+
+.team-row span,
+.class-row span {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.workspace {
+  min-width: 0;
+  overflow-x: hidden;
+  padding: 24px;
+  padding-bottom: 86px;
+}
+
+.topbar {
+  min-height: 64px;
+}
+
+.topbar h2 {
+  font-size: 30px;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.import-label input {
+  display: none;
+}
+
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 18px 0 10px;
+}
+
+.metric {
+  min-height: 76px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
+}
+
+.metric strong {
+  font-size: 24px;
+  overflow-wrap: anywhere;
+}
+
+.metric span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.role-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 8px 0 18px;
+}
+
+.role-chip {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 240, 0.78);
+  padding: 10px 12px;
+}
+
+.role-chip span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.role-chip strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.tabs {
+  justify-content: flex-start;
+  border-bottom: 1px solid var(--line);
+  margin: 10px 0 18px;
+  overflow-x: auto;
+}
+
+.tab {
+  white-space: nowrap;
+  border-radius: 0;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  color: var(--accent-dark);
+  border-bottom-color: var(--accent);
+}
+
+.tab-view {
+  display: none;
+}
+
+.tab-view.active {
+  display: block;
+}
+
+.two-column,
+.three-column,
+.board-layout,
+.teacher-console {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+.two-column {
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.88fr);
+}
+
+.teacher-console {
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+}
+
+.three-column {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.board-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.surface {
+  min-width: 0;
+  background: rgba(255, 250, 240, 0.88);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.teacher-console > .surface {
+  max-height: calc(100vh - 320px);
+  min-height: 460px;
+  overflow: auto;
+}
+
+.teacher-console > .surface:nth-child(2) {
+  position: sticky;
+  top: 16px;
+}
+
+.section-title {
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.section-title > div,
+.topbar > div:first-child {
+  min-width: 0;
+}
+
+.section-title h3 {
+  font-size: 18px;
+}
+
+.section-title p {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+select,
+input {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fffdf7;
+  color: var(--ink);
+  padding: 8px 10px;
+}
+
+.section-title select {
+  max-width: 240px;
+  flex: 0 0 auto;
+}
+
+.strategy-grid,
+.quick-actions,
+.score-form,
+.profile-summary,
+.prop-list {
+  display: grid;
+  gap: 10px;
+}
+
+.strategy-button,
+.quick-button,
+.score-row,
+.profile-row,
+.drawn-card,
+.prop-card,
+.pending-box,
+.task-card {
+  border: 1px solid var(--line);
+  background: var(--surface-strong);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.strategy-button {
+  text-align: left;
+}
+
+.strategy-button.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.strategy-head h4,
+.drawn-card h4,
+.prop-card h4,
+.task-card h4 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.strategy-head span,
+.pending-title span,
+.drawn-card .type,
+.task-card span {
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.strategy-tag {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  margin-top: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--gold-soft);
+  color: #7d561c;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.pending-title {
+  align-items: flex-start;
+}
+
+.pending-title strong {
+  text-align: right;
+  max-width: 46%;
+  overflow-wrap: anywhere;
+}
+
+.strategy-button p,
+.quick-button span,
+.drawn-card p,
+.prop-card p,
+.pending-box p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.strategy-button:hover,
+.quick-button:hover,
+.board-cell:hover {
+  border-color: var(--accent);
+}
+
+.quick-button {
+  text-align: left;
+}
+
+.pending-box {
+  margin-bottom: 12px;
+  background: #fbf7ec;
+}
+
+.settle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.manual-form {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.form-grid,
+.role-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.form-grid label,
+.dialog-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(104px, 1fr));
+  gap: 8px;
+  min-width: 0;
+  overflow: visible;
+}
+
+.board-layout > .surface:first-child {
+  overflow: hidden;
+}
+
+.board-layout > .surface:last-child {
+  position: static;
+}
+
+.board-cell {
+  min-height: 96px;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: #fffdf8;
+  border-radius: var(--radius);
+  padding: 10px;
+  overflow-wrap: anywhere;
+}
+
+.board-cell span {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #eee6d8;
+  font-size: 12px;
+}
+
+.board-cell strong,
+.board-cell small {
+  display: block;
+  margin-top: 6px;
+}
+
+.board-cell strong {
+  font-size: 13px;
+}
+
+.board-cell small {
+  color: var(--muted);
+  line-height: 1.35;
+  font-size: 11px;
+}
+
+.board-cell.active {
+  outline: 3px solid rgba(17, 107, 88, 0.24);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.type-opportunity,
+.type-capital {
+  background: var(--gold-soft);
+}
+
+.type-crisis,
+.type-risk {
+  background: var(--danger-soft);
+}
+
+.type-tech {
+  background: var(--blue-soft);
+}
+
+.dice-result {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 22px;
+}
+
+.task-card {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.quick-dock {
+  position: fixed;
+  left: 328px;
+  right: 24px;
+  bottom: 18px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.94);
+  box-shadow: 0 18px 44px rgba(42, 37, 28, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.quick-dock > div {
+  margin-right: auto;
+  min-width: 0;
+}
+
+.quick-dock strong,
+.quick-dock span {
+  display: block;
+}
+
+.quick-dock span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+body:not(.compact-mode) .quick-dock {
+  display: none;
+}
+
+.compact-mode .workspace {
+  padding-top: 14px;
+}
+
+.compact-mode .topbar {
+  min-height: 44px;
+}
+
+.compact-mode .topbar h2 {
+  font-size: 22px;
+}
+
+.compact-mode .metrics-strip {
+  grid-template-columns: repeat(6, minmax(100px, 1fr));
+  margin: 10px 0 6px;
+}
+
+.compact-mode .metric {
+  min-height: 54px;
+  padding: 6px 0;
+}
+
+.compact-mode .metric strong {
+  font-size: 18px;
+}
+
+.compact-mode .role-strip {
+  display: none;
+}
+
+.compact-mode .tabs {
+  margin: 6px 0 10px;
+}
+
+.compact-mode .teacher-console > .surface {
+  max-height: calc(100vh - 230px);
+}
+
+.compact-mode .section-title {
+  margin-bottom: 10px;
+}
+
+.compact-mode .strategy-button,
+.compact-mode .quick-button,
+.compact-mode .pending-box {
+  padding: 10px;
+}
+
+.task-card .settle-actions {
+  margin-top: 0;
+  justify-content: flex-end;
+}
+
+.drawn-card {
+  min-height: 190px;
+}
+
+.interaction-surface {
+  margin-top: 16px;
+}
+
+.interaction-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.interaction-actions select {
+  width: 180px;
+}
+
+.interaction-card {
+  min-height: 150px;
+}
+
+.defense-tip {
+  border-left: 3px solid var(--accent);
+  padding-left: 10px;
+  color: var(--ink) !important;
+}
+
+.score-total {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  color: white;
+  background: var(--accent);
+  font-size: 24px;
+}
+
+.score-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px;
+  gap: 12px;
+  align-items: center;
+}
+
+.score-row strong {
+  overflow-wrap: anywhere;
+}
+
+.score-row span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 920px;
+}
+
+th,
+td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.highlight-row {
+  background: rgba(17, 107, 88, 0.08);
+}
+
+dialog {
+  border: 0;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+}
+
+dialog::backdrop {
+  background: rgba(32, 32, 29, 0.34);
+}
+
+.dialog-form {
+  width: min(560px, 92vw);
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  background: var(--surface);
+}
+
+.dialog-form h3 {
+  margin: 0;
+}
+
+@media (max-width: 1180px) {
+  .metrics-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .three-column {
+    grid-template-columns: 1fr;
+  }
+
+  .interaction-actions {
+    justify-content: flex-start;
+  }
+
+  .board-grid {
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .two-column,
+  .teacher-console,
+  .role-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .teacher-console > .surface,
+  .teacher-console > .surface:nth-child(2) {
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    position: static;
+  }
+
+  .quick-dock {
+    left: 16px;
+    right: 16px;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .workspace,
+  .sidebar {
+    padding: 16px;
+  }
+
+  .metrics-strip,
+  .form-grid,
+  .role-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .board-grid {
+    grid-template-columns: repeat(2, minmax(132px, 1fr));
+    min-width: 0;
+  }
+
+  .task-card {
+    grid-template-columns: 1fr;
+  }
+
+  .task-card .settle-actions {
+    justify-content: flex-start;
+  }
+}

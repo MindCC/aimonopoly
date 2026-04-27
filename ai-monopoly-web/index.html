@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 创业大富翁</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">AI</div>
+          <div>
+            <h1>AI 创业大富翁</h1>
+            <p>课堂经营与期末答辩控制台</p>
+          </div>
+        </div>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <h2>班级</h2>
+            <button class="icon-button" id="addClassBtn" title="新增班级">+</button>
+          </div>
+          <div id="classList" class="class-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <h2>小组</h2>
+            <button class="icon-button" id="addTeamBtn" title="新增小组">+</button>
+          </div>
+          <div id="teamList" class="team-list"></div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="currentClassLabel">当前班级</p>
+            <h2 id="currentTeamTitle">选择一个小组开始经营</h2>
+          </div>
+          <div class="topbar-actions">
+            <button class="ghost-button" id="editTeamBtn">编辑角色</button>
+            <button class="ghost-button" id="undoBtn">撤销上一步</button>
+            <button class="primary-button" id="quickClassBtn">上课模式</button>
+            <button class="ghost-button" id="exportBtn">导出数据</button>
+            <label class="ghost-button import-label">
+              导入数据
+              <input id="importInput" type="file" accept="application/json" />
+            </label>
+            <button class="danger-button" id="resetBtn">重置示例</button>
+          </div>
+        </header>
+
+        <section class="metrics-strip" id="metricsStrip"></section>
+        <section class="role-strip" id="roleStrip"></section>
+
+        <section class="tabs">
+          <button class="tab active" data-tab="operate">课堂经营</button>
+          <button class="tab" data-tab="leaderboard">班级榜单</button>
+          <button class="tab" data-tab="board">期末棋盘</button>
+          <button class="tab" data-tab="cards">卡牌道具</button>
+          <button class="tab" data-tab="score">期末评分</button>
+          <button class="tab" data-tab="records">经营记录</button>
+        </section>
+
+        <section class="tab-view active" id="operateView">
+          <div class="teacher-console">
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>运营策略</h3>
+                  <p>先选择策略，再按课堂表现判定成功、部分成功或失败。</p>
+                </div>
+                <select id="roundTopic">
+                  <option>AI Agent 概论</option>
+                  <option>MVP 与商业验证</option>
+                  <option>Coze / Workbuddy 实战</option>
+                  <option>Workflow 与多工具协同</option>
+                  <option>产品结构设计</option>
+                  <option>优化与稳定性</option>
+                  <option>综合项目开发</option>
+                  <option>期末路演准备</option>
+                </select>
+              </div>
+              <div id="strategyGrid" class="strategy-grid"></div>
+            </section>
+
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>判定与课堂表现</h3>
+                  <p>策略判定会写入记录；快捷奖励用于课堂问答和阶段成果。</p>
+                </div>
+              </div>
+              <div id="pendingStrategy" class="pending-box"></div>
+              <div id="quickActions" class="quick-actions"></div>
+
+              <div class="manual-form">
+                <h4>手动调整</h4>
+                <div class="form-grid">
+                  <label>
+                    说明
+                    <input id="manualNote" placeholder="例如：第 4 回合演示补充" />
+                  </label>
+                  <label>
+                    现金
+                    <input id="manualCash" type="number" value="0" />
+                  </label>
+                  <label>
+                    用户
+                    <input id="manualUsers" type="number" value="0" />
+                  </label>
+                  <label>
+                    产品力
+                    <input id="manualProduct" type="number" value="0" />
+                  </label>
+                  <label>
+                    技术力
+                    <input id="manualTech" type="number" value="0" />
+                  </label>
+                  <label>
+                    声誉
+                    <input id="manualReputation" type="number" value="0" />
+                  </label>
+                  <label>
+                    合规
+                    <input id="manualCompliance" type="number" value="0" />
+                  </label>
+                </div>
+                <button class="primary-button" id="manualApplyBtn">记录调整</button>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="quick-dock" id="quickDock" aria-label="上课快捷操作">
+          <div>
+            <strong id="dockTeamName">当前小组</strong>
+            <span id="dockCash">现金</span>
+          </div>
+          <button class="ghost-button" data-dock-tab="operate">经营</button>
+          <button class="ghost-button" data-dock-tab="leaderboard">榜单</button>
+          <button class="ghost-button" data-dock-tab="board">棋盘</button>
+          <button class="ghost-button" data-dock-tab="score">评分</button>
+          <button class="danger-button" id="dockUndoBtn">撤销</button>
+        </section>
+
+        <section class="tab-view" id="leaderboardView">
+          <section class="surface">
+            <div class="section-title">
+              <div>
+                <h3>班级经营榜</h3>
+                <p>综合估值 = 现金 + 用户×80 + 产品力/技术力×1200 + 声誉/合规×900。</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>排名</th>
+                    <th>小组</th>
+                    <th>项目</th>
+                    <th>综合估值</th>
+                    <th>现金</th>
+                    <th>用户</th>
+                    <th>产品力</th>
+                    <th>技术力</th>
+                    <th>声誉</th>
+                    <th>合规</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboardRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab-view" id="boardView">
+          <div class="board-layout">
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>期末大富翁棋盘</h3>
+                  <p>掷骰子推进小组位置，落点决定答辩任务或抽卡。</p>
+                </div>
+                <div class="dice-actions">
+                  <strong id="diceResult" class="dice-result">-</strong>
+                  <button class="primary-button" id="rollDiceBtn">掷骰子</button>
+                </div>
+              </div>
+              <div id="boardGrid" class="board-grid"></div>
+            </section>
+
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>落点任务</h3>
+                  <p>教师可按现场完成质量记录奖励或处罚。</p>
+                </div>
+              </div>
+              <div id="boardTask" class="task-panel"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="tab-view" id="cardsView">
+          <div class="three-column">
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>机会卡</h3>
+                  <p>可按条件自动结算，也可由教师手动判定。</p>
+                </div>
+                <button class="primary-button" id="drawOpportunityBtn">抽取</button>
+              </div>
+              <div id="opportunityCard" class="drawn-card"></div>
+            </section>
+
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>危机卡</h3>
+                  <p>失败处罚需在角色回答后结算。</p>
+                </div>
+                <button class="primary-button" id="drawCrisisBtn">抽取</button>
+              </div>
+              <div id="crisisCard" class="drawn-card"></div>
+            </section>
+
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>道具卡</h3>
+                  <p>每 3000 元购买 1 张，最多 3 张。</p>
+                </div>
+                <button class="primary-button" id="buyPropBtn">购买</button>
+              </div>
+              <div id="propList" class="prop-list"></div>
+            </section>
+          </div>
+
+          <section class="surface interaction-surface">
+            <div class="section-title">
+              <div>
+                <h3>组间互动卡</h3>
+                <p>合作卡双方同意后结算；商战卡需选择目标小组并给对方防守机会；谈判卡由教师确认结果。</p>
+              </div>
+              <div class="interaction-actions">
+                <select id="targetTeamSelect" title="目标小组"></select>
+                <button class="primary-button" id="drawCoopBtn">合作卡</button>
+                <button class="danger-button" id="drawBattleBtn">商战卡</button>
+                <button class="ghost-button" id="drawNegotiationBtn">谈判卡</button>
+              </div>
+            </div>
+            <div id="interactionCard" class="drawn-card interaction-card"></div>
+          </section>
+        </section>
+
+        <section class="tab-view" id="scoreView">
+          <div class="two-column score-layout">
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>期末评分</h3>
+                  <p>总分 100，系统会根据输入即时汇总。</p>
+                </div>
+                <strong id="scoreTotal" class="score-total">0</strong>
+              </div>
+              <div id="scoreForm" class="score-form"></div>
+              <button class="primary-button" id="saveScoreBtn">保存评分</button>
+            </section>
+
+            <section class="surface">
+              <div class="section-title">
+                <div>
+                  <h3>经营画像</h3>
+                  <p>用于辅助评委追问和课程复盘。</p>
+                </div>
+              </div>
+              <div id="profileSummary" class="profile-summary"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="tab-view" id="recordsView">
+          <section class="surface">
+            <div class="section-title">
+              <div>
+                <h3>经营记录</h3>
+                <p>记录会保存在浏览器本地，也可以导出 JSON 备份。</p>
+              </div>
+              <button class="ghost-button" id="clearRecordsBtn">清空本组记录</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>时间</th>
+                    <th>课程主题</th>
+                    <th>事件</th>
+                    <th>现金</th>
+                    <th>用户</th>
+                    <th>产品力</th>
+                    <th>技术力</th>
+                    <th>声誉</th>
+                    <th>合规</th>
+                  </tr>
+                </thead>
+                <tbody id="recordRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="teamDialog">
+      <form method="dialog" class="dialog-form">
+        <h3 id="dialogTitle">新增小组</h3>
+        <label>
+          小组名称
+          <input id="teamNameInput" required />
+        </label>
+        <label>
+          项目名称
+          <input id="projectNameInput" placeholder="可稍后补充" />
+        </label>
+        <div class="role-form-grid">
+          <label>
+            CEO / 产品经理
+            <input id="roleCeoInput" placeholder="学生姓名" />
+          </label>
+          <label>
+            CTO / 技术负责人
+            <input id="roleCtoInput" placeholder="学生姓名" />
+          </label>
+          <label>
+            CMO / 运营负责人
+            <input id="roleCmoInput" placeholder="学生姓名" />
+          </label>
+          <label>
+            CFO / 风控负责人
+            <input id="roleCfoInput" placeholder="学生姓名" />
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost-button">取消</button>
+          <button id="saveTeamBtn" value="default" class="primary-button">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./src/game-logic.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
